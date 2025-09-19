@@ -14,7 +14,6 @@ class RealMetrics implements MetricsPort {
     this.gauges.set(metricName, value);
   }
 
-  // Testing helpers
   getCounter(metricName: string): number {
     return this.counters.get(metricName) || 0;
   }

@@ -22,5 +22,9 @@ yarn-error.log*
 .idea/
 .vscode/
 
+# local presentation (do not commit)
+PRESENTATION.md
+PRESENTATION-SCRIPT.md
+
 # prisma
 .prisma/
