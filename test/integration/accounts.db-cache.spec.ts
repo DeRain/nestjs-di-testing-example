@@ -10,11 +10,12 @@ const hasRedis = !!process.env.REDIS_URL;
 
 (hasDb && hasRedis ? describe : describe.skip)('AccountsService (integration: DB+Cache real, RPC mocked)', () => {
 	let svc: AccountsService;
+	let moduleRef: import('@nestjs/testing').TestingModule;
 	let prisma: PrismaClient;
 	let redis: Redis;
 
 	beforeAll(async () => {
-		const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
+		moduleRef = await Test.createTestingModule({ imports: [AppModule] })
 			.overrideProvider(RPC)
 			.useValue({ getBalance: async () => '777', getChainId: async () => 99, ping: async () => true })
 			.compile();
@@ -23,13 +24,14 @@ const hasRedis = !!process.env.REDIS_URL;
 		redis = new Redis(process.env.REDIS_URL!);
 	});
 
-	afterAll(async () => {
+		afterAll(async () => {
 		await prisma.$disconnect();
 		await redis.quit();
+			await moduleRef.close();
 	});
 
 	it('writes to DB and sets Redis with TTL', async () => {
-		const address = '0x0000000000000000000000000000000000000003';
+		const address = '0x0000000000000000000000000000000000000000';
 		const before = await prisma.query.count();
 		const wei = await svc.getBalance(address);
 		expect(wei).toBe('777');

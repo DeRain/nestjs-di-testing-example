@@ -43,11 +43,15 @@ describe('App E2E', () => {
 
 	it('GET /accounts/:address/balance persists an audit row', async () => {
 		const address = '0x0000000000000000000000000000000000000000';
+		// ensure no cache to make the test deterministic
+		const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+		await redis.del(`balance:${address.toLowerCase()}`);
 		const before = await prisma.query.count();
 		const res = await request(app.getHttpServer()).get(`/accounts/${address}/balance`).expect(200);
 		expect(res.body).toHaveProperty('wei');
 		const after = await prisma.query.count();
 		expect(after).toBe(before + 1);
+		await redis.quit();
 	});
 
 	it('POST /accounts/refresh overwrites cache and inserts audit', async () => {

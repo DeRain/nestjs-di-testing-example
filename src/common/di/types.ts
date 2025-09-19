@@ -14,3 +14,16 @@ export interface RpcPort {
 	getChainId(): Promise<number>;
 	ping(): Promise<boolean>;
 }
+
+export interface GreetingPort {
+	sayHello(name: string): string;
+}
+
+export interface MetricsPort {
+  increment(metricName: string, value?: number): void;
+  gauge(metricName: string, value: number): void;
+}
+
+export interface ClockPort {
+  now(): Date;
+}

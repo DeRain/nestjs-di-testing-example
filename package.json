@@ -10,15 +10,13 @@
     "lint": "eslint .",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev --name init",
+    "prisma:seed": "dotenv -e .env.test.e2e -- ts-node prisma/seed.ts",
     "test": "npm run test:unit && npm run test:integration",
     "test:unit": "jest --selectProjects unit",
-    "test:integration": "docker-compose up -d && sleep 2 && dotenv -e .env.test.e2e -- jest --selectProjects integration && docker-compose down -v",
-    "test:e2e": "jest --selectProjects e2e",
-    "e2e:up": "docker-compose up -d",
-    "e2e:down": "docker-compose down -v",
-    "e2e:prep": "dotenv -e .env.test.e2e -- npx prisma migrate deploy && dotenv -e .env.test.e2e -- npx prisma generate",
-    "e2e:run": "dotenv -e .env.test.e2e -- jest --selectProjects e2e",
-    "e2e": "npm run e2e:up && sleep 2 && npm run e2e:prep && npm run e2e:run && npm run e2e:down"
+    "compose:up": "docker compose up -d",
+    "compose:down": "docker compose down -v",
+    "test:integration": "npm run compose:up && dotenv -e .env.test.e2e -- npx prisma migrate deploy && dotenv -e .env.test.e2e -- npx prisma generate && npm run prisma:seed && dotenv -e .env.test.e2e -- jest --selectProjects integration --runInBand; npm run compose:down",
+    "test:e2e": "npm run compose:up && dotenv -e .env.test.e2e -- npx prisma migrate deploy && dotenv -e .env.test.e2e -- npx prisma generate && npm run prisma:seed && dotenv -e .env.test.e2e -- jest --selectProjects e2e --runInBand; npm run compose:down"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

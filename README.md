@@ -21,7 +21,7 @@ npm run dev
 
 ```bash
 npm run test:unit
-npm run test:integration   # spins docker-compose (postgres, redis, anvil); no skips
+npm run test:integration   # spins docker-compose (postgres, redis, anvil)
 npm run e2e                # spins docker-compose (postgres, redis, anvil)
 ```
 
@@ -44,6 +44,27 @@ moduleRef.overrideProvider(RPC).useValue(mockRpc);
 ## Environment
 
 - DATABASE_URL, REDIS_URL, RPC_URL, PORT. See `.env.example` and `.env.test.e2e`.
+
+## DI & Testing Map
+
+- Basic DI (useClass/useExisting/useValue): `src/examples/greeting/*`, tests in `test/unit/di.greeting.spec.ts`
+- Factory provider: `src/examples/factory/cache-key-prefix.provider.ts`, tests in `test/unit/factory.cache-prefix.spec.ts`
+- Async provider: `src/examples/async/rpc-client.module.ts`, tests in `test/unit/async.rpc-client.spec.ts`
+- Dynamic module: `src/examples/dynamic/metrics.module.ts`, tests in `test/unit/dynamic.metrics.spec.ts`
+- Scoped provider: `src/common/request-id/*` (REQUEST scope), e2e in `test/e2e/accounts.requestid-cache.e2e-spec.ts`
+- Alias tokens: `src/examples/alias/clock.ts`, tests in `test/unit/alias.clock.spec.ts`
+- ModuleRef optional: `src/examples/moduleref/optional.service.ts`, tests in `test/unit/moduleref.optional.spec.ts`
+
+## Integration & E2E highlights
+
+- Integration partial mocks:
+  - Real DB+Redis, Mock RPC: `test/integration/accounts.db-cache.spec.ts`
+  - Real RPC+DB, Mock Redis: `test/integration/rpc-db.mock-redis.spec.ts`
+  - Real RPC+Redis, Mock DB: `test/integration/rpc-redis.mock-db.spec.ts`
+- E2E selective overrides:
+  - Health override cases: `test/e2e/health.overrides.e2e-spec.ts`
+  - Accounts with RequestId and cache override: `test/e2e/accounts.requestid-cache.e2e-spec.ts`
+  - Refresh with RPC mocked: `test/e2e/accounts.refresh-mocked.e2e-spec.ts`
 
 ## Docker compose (e2e)
 

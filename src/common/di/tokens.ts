@@ -1,3 +1,12 @@
 export const DB = Symbol('DB');
 export const CACHE = Symbol('CACHE');
 export const RPC = Symbol('RPC');
+export const REQUEST_ID = Symbol('REQUEST_ID');
+export const GREETING = Symbol('GREETING');
+export const GREETING_SHOUTING = Symbol('GREETING_SHOUTING');
+export const CACHE_KEY_PREFIX = Symbol('CACHE_KEY_PREFIX');
+export const ENVIRONMENT = Symbol('ENVIRONMENT');
+export const METRICS = Symbol('METRICS');
+export const CLOCK = Symbol('CLOCK');
+export const NOW_FN = Symbol('NOW_FN');
+export const RPC_CLIENT = Symbol('RPC_CLIENT');

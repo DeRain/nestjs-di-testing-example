@@ -18,6 +18,7 @@ export class HealthController {
 			this.cache.ping(),
 			this.rpc.ping(),
 		]);
-		return { ok: true, db: dbOk, cache: cacheOk, rpc: rpcOk };
+		const ok = Boolean(dbOk && cacheOk && rpcOk);
+		return { ok, db: dbOk, cache: cacheOk, rpc: rpcOk };
 	}
 }
