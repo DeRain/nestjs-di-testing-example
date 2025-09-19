@@ -5,10 +5,24 @@ A tiny NestJS API showcasing DI with tokens/interfaces, factory providers, and t
 ## Quick start
 
 ```bash
-cp .env.example .env
 npm i
-npm run prisma:migrate
-npm run dev
+# Spin infra (Postgres, Redis, Anvil)
+npm run compose:up
+
+# Create test/e2e env used by scripts and (optionally) dev
+cat > .env.test.e2e << 'EOF'
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/nest_demo?schema=public
+REDIS_URL=redis://localhost:6379
+RPC_URL=http://localhost:8545
+EOF
+
+# Prepare database and seed
+dotenv -e .env.test.e2e -- npx prisma migrate deploy
+dotenv -e .env.test.e2e -- npx prisma generate
+npm run prisma:seed
+
+# Start the API (loads your current shell env)
+dotenv -e .env.test.e2e -- npm run dev
 ```
 
 ## Endpoints
@@ -22,7 +36,7 @@ npm run dev
 ```bash
 npm run test:unit
 npm run test:integration   # spins docker-compose (postgres, redis, anvil)
-npm run e2e                # spins docker-compose (postgres, redis, anvil)
+npm run test:e2e           # spins docker-compose (postgres, redis, anvil)
 ```
 
 Notes:
@@ -37,13 +51,23 @@ import { RPC } from './src/common/di/tokens';
 
 const mockRpc = { getBalance: async () => '123', getChainId: async () => 1, ping: async () => true };
 
-const moduleRef = await Test.createTestingModule({ /* ... */ }).compile();
-moduleRef.overrideProvider(RPC).useValue(mockRpc);
+const moduleRef = await Test.createTestingModule({ /* ... */ })
+  .overrideProvider(RPC)
+  .useValue(mockRpc)
+  .compile();
 ```
 
 ## Environment
 
-- DATABASE_URL, REDIS_URL, RPC_URL, PORT. See `.env.example` and `.env.test.e2e`.
+- DATABASE_URL, REDIS_URL, RPC_URL, PORT. This repo uses `.env.test.e2e` for integration/e2e and can be reused for local dev:
+
+```bash
+cat > .env.test.e2e << 'EOF'
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/nest_demo?schema=public
+REDIS_URL=redis://localhost:6379
+RPC_URL=http://localhost:8545
+EOF
+```
 
 ## DI & Testing Map
 
